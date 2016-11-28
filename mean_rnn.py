@@ -13,8 +13,7 @@ import data_utils
 import cPickle
 import math
 
-import slim.ops as ops
-
+linear = tf.nn.rnn_cell._linear
 class MeanRNN(object):
   def __init__(self, feature_size, vocab_size, max_sentence_length, size, num_layers, use_lstm=False, forward_only=False, dtype=tf.float32):
     self.feature_size = feature_size
@@ -24,7 +23,7 @@ class MeanRNN(object):
 
     single_cell = tf.nn.rnn_cell.GRUCell(size)
     if use_lstm:
-      single_cell = tf.nn.rnn_cell.LSTMCell(num_units=size, state_is_tuple=False)
+      single_cell = tf.nn.rnn_cell.BasicLSTMCell(num_units=size, state_is_tuple=False)
     cell = single_cell
     if num_layers > 1:
       cell = tf.nn.rnn_cell.MultiRNNCell([cell] * num_layers, state_is_tuple=False)
@@ -39,9 +38,8 @@ class MeanRNN(object):
       self.target_weights.append(tf.placeholder(tf.float32, shape=[None], name="weight{0}".format(i)))
     self.targets = [self.decoder_inputs[i + 1] for i in xrange(len(self.decoder_inputs) -1)]
     self.targets.append(tf.placeholder(tf.int32, shape=[None], name="last_target"))
-
-    state = tf.concat(1, [ops.fc(self.feature_inputs, cell.state_size)] * num_layers)
-
+    
+    state = linear(self.feature_inputs, cell.state_size, True)
     # Training outputs and losses.
     if forward_only:
       self.outputs, _ = tf.nn.seq2seq.embedding_rnn_decoder(self.decoder_inputs, state, cell, vocab_size, size, feed_previous=True, update_embedding_for_previous=False)
