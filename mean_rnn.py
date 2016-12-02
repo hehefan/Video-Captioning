@@ -13,6 +13,19 @@ import data_utils
 import cPickle
 import math
 
+tf.app.flags.DEFINE_float("learning_rate", 0.001, "Learning rate.")
+tf.app.flags.DEFINE_integer("batch_size", 64, "Batch size to use during training.")
+tf.app.flags.DEFINE_integer("size", 1024, "Size of RNN cell.")
+tf.app.flags.DEFINE_integer("num_layers", 3, "Number of RNN layers.")
+tf.app.flags.DEFINE_integer("feature_size", 2048, "Size of frame feature vector.")
+tf.app.flags.DEFINE_integer("max_sentence_length", 40, "Max length of sentence.")
+tf.app.flags.DEFINE_boolean("use_lstm", False, "LSTM or GRU for RNN cell.")
+tf.app.flags.DEFINE_integer("vocab_size", 8110, "Size of English vocabulary.")
+tf.app.flags.DEFINE_string("checkpoint_dir", "CheckPoint", "Checkpoint directory.")
+tf.app.flags.DEFINE_integer("steps_per_checkpoint", 200, "How many training steps to do per checkpoint.")
+
+FLAG = tf.app.flags.FLAGS
+
 linear = tf.nn.rnn_cell._linear
 class MeanRNN(object):
   def __init__(self, feature_size, vocab_size, max_sentence_length, size, num_layers, use_lstm=False, forward_only=False, dtype=tf.float32):
@@ -38,7 +51,7 @@ class MeanRNN(object):
       self.target_weights.append(tf.placeholder(tf.float32, shape=[None], name="weight{0}".format(i)))
     self.targets = [self.decoder_inputs[i + 1] for i in xrange(len(self.decoder_inputs) -1)]
     self.targets.append(tf.placeholder(tf.int32, shape=[None], name="last_target"))
-    
+
     state = linear(self.feature_inputs, cell.state_size, True)
     # Training outputs and losses.
     if forward_only:
@@ -46,7 +59,7 @@ class MeanRNN(object):
     else:
       self.outputs, _ = tf.nn.seq2seq.embedding_rnn_decoder(self.decoder_inputs, state, cell, vocab_size, size, feed_previous=False)
       self.loss = tf.nn.seq2seq.sequence_loss(self.outputs, self.targets, self.target_weights)
-      self.update = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(self.loss, self.global_step, tf.trainable_variables())
+      self.update = tf.train.AdamOptimizer(learning_rate=FLAG.learning_rate).minimize(self.loss, self.global_step, tf.trainable_variables())
 
     self.saver = tf.train.Saver(tf.all_variables(), max_to_keep=999999999)
 
@@ -89,9 +102,9 @@ class MeanRNN(object):
       batch_weights.append(batch_weight)
     return feature_inputs, batch_decoder_inputs, batch_weights
 
-def create_model(session, feature_size, vocab_size, max_sentence_length, size, num_layers, use_lstm, forward_only):
-  model = MeanRNN(feature_size, vocab_size, max_sentence_length, size, num_layers, use_lstm, forward_only)
-  ckpt = tf.train.get_checkpoint_state('CheckPoint')
+def create_model(session, forward_only):
+  model = MeanRNN(FLAG.feature_size, FLAG.vocab_size, FLAG.max_sentence_length, FLAG.size, FLAG.num_layers, FLAG.use_lstm, forward_only)
+  ckpt = tf.train.get_checkpoint_state(FLAG.checkpoint_dir)
   if ckpt and tf.gfile.Exists(ckpt.model_checkpoint_path):
     print("Reading model parameters from %s" % ckpt.model_checkpoint_path)
     model.saver.restore(session, ckpt.model_checkpoint_path)
@@ -100,8 +113,8 @@ def create_model(session, feature_size, vocab_size, max_sentence_length, size, n
     session.run(tf.initialize_all_variables())
   return model
 
-def train(feature_size, vocab_size, max_sentence_length, size, num_layers, use_lstm, batch_size, steps_per_checkpoint):
-  with open ('data/msr-vtt-video-mean-pooling-feature.pkl', 'rb') as f:
+def train():
+  with open ('data/msr-vtt-video-mean-pooling-feature-15.pkl', 'rb') as f:
     feature = cPickle.load(f)
   with open ('data/sentences.pkl', 'rb') as f:
     sentence = cPickle.load(f)
@@ -109,56 +122,67 @@ def train(feature_size, vocab_size, max_sentence_length, size, num_layers, use_l
     info = cPickle.load(f)['train']
 
   with tf.Session() as sess:
-    print("Creating %d layers of %d units." % (num_layers, size))
-    model = create_model(sess, feature_size, vocab_size, max_sentence_length, size, num_layers, use_lstm, False)
+    print("Creating %d layers of %d units." % (FLAG.num_layers, FLAG.size))
+    model = create_model(sess, False)
     
     current_step = 0
     while True:
       np.random.shuffle(info)
-      for start,end in zip(range(0, len(info), batch_size), range(batch_size, len(info), batch_size)):
-        feature_inputs, batch_decoder_inputs, batch_weights = model.get_batch(feature, sentence, info[start:end], batch_size)
-        step_loss = model.step(sess, feature_inputs, batch_decoder_inputs, batch_weights, False, batch_size)
+      for start,end in zip(range(0, len(info), FLAG.batch_size), range(FLAG.batch_size, len(info), FLAG.batch_size)):
+        feature_inputs, batch_decoder_inputs, batch_weights = model.get_batch(feature, sentence, info[start:end], FLAG.batch_size)
+        step_loss = model.step(sess, feature_inputs, batch_decoder_inputs, batch_weights, False, FLAG.batch_size)
         current_step += 1
-        if current_step % steps_per_checkpoint == 0:
+        if current_step % FLAG.steps_per_checkpoint == 0:
           print ("global step %d - loss %.3f" % (model.global_step.eval(), step_loss))
-          checkpoint_path = os.path.join('CheckPoint', 'ckpt')
+          checkpoint_path = os.path.join(FLAG.checkpoint_dir, 'ckpt')
           model.saver.save(sess, checkpoint_path, global_step=model.global_step)
           sys.stdout.flush()
 
-def evaluate(feature_size, vocab_size, max_sentence_length, size, num_layers, use_lstm):
+def evaluate():
   from pycocoevalcap.bleu.bleu import Bleu
   from pycocoevalcap.rouge.rouge import Rouge
   from pycocoevalcap.cider.cider import Cider
   from pycocoevalcap.meteor.meteor import Meteor
   from pycocoevalcap.tokenizer.ptbtokenizer import PTBTokenizer
 
-  with open('data/validate.pkl', 'rb') as f:
+  with open('data/validate-mean-pooling-15.pkl', 'rb') as f:
     data = cPickle.load(f)
   scorers = [(Bleu(4), ["Bleu_1", "Bleu_2", "Bleu_3", "Bleu_4"]), (Meteor(),"METEOR"), (Rouge(), "ROUGE_L"), (Cider(), "CIDEr")]
   vocab, re_vocab = data_utils.initialize_vocabulary('data/vocab.txt')
   GTS = {}
   RES = {}
   batch_size = 1
-  with tf.Session() as sess:
-    model = create_model(sess, feature_size, vocab_size, max_sentence_length, size, num_layers, use_lstm, True)
-    for idx, (feature, caption) in enumerate(data):
-      feature_inputs, batch_decoder_inputs, batch_weights = model.get_batch([feature], [([0], 0)], [0], 1)
-      output_logits = model.step(sess, feature_inputs, batch_decoder_inputs, batch_weights, forward_only=True, batch_size=1)
-      outputs = [int(np.argmax(logit, axis=1)) for logit in output_logits]
-      if data_utils.EOS_ID in outputs:
-        outputs = outputs[:outputs.index(data_utils.EOS_ID)]
-      sentence = " ".join([tf.compat.as_str(re_vocab[output]) for output in outputs])
-      print ("%s: %s"%(sentence, caption[9]))
-      GTS[idx] = caption
-      RES[idx] = [sentence]
-  for scorer, method in scorers:
-    score, scores = scorer.compute_score(GTS, RES)
-    if isinstance(method, list):
-      for k, v in zip(method, score):
-        print("%s:\t%s"%(k, v))
-    else:
-      print("%s:\t%s"%(method, score))
-if __name__ == "__main__":
-  train(feature_size=2048, vocab_size=8110, max_sentence_length=40, size=1024, num_layers=4, use_lstm=False, batch_size=64, steps_per_checkpoint=200)
-#  evaluate(feature_size=2048, vocab_size=8110, max_sentence_length=40, size=1024, num_layers=1, use_lstm=False)
 
+  with tf.Session() as sess:
+    model = MeanRNN(FLAG.feature_size, FLAG.vocab_size, FLAG.max_sentence_length, FLAG.size, FLAG.num_layers, FLAG.use_lstm, forward_only=True)
+    step = 0
+    while True:
+      step += FLAG.steps_per_checkpoint
+      ckpt_path = os.path.join(FLAG.checkpoint_dir,'ckpt-%d'%step)
+      if os.path.isfile(ckpt_path):
+        model.saver.restore(sess, ckpt_path)
+        for idx, (feature, caption) in enumerate(data):
+          feature_inputs, batch_decoder_inputs, batch_weights = model.get_batch([feature], [([0], 0)], [0], 1)
+          output_logits = model.step(sess, feature_inputs, batch_decoder_inputs, batch_weights, forward_only=True, batch_size=1)
+          outputs = [int(np.argmax(logit, axis=1)) for logit in output_logits]
+          if data_utils.EOS_ID in outputs:
+            outputs = outputs[:outputs.index(data_utils.EOS_ID)]
+          sentence = " ".join([tf.compat.as_str(re_vocab[output]) for output in outputs])
+#          print ("%s: %s"%(sentence, caption[9]))
+          GTS[idx] = caption
+          RES[idx] = [sentence]
+        print('STEP: %d'%step)
+        for scorer, method in scorers:
+          score, scores = scorer.compute_score(GTS, RES)
+          if isinstance(method, list):
+            for k, v in zip(method, score):
+              print("%s:\t%s"%(k, v))
+          else:
+            print("%s:\t%s"%(method, score))
+        sys.stdout.flush()
+      else:
+        break
+
+if __name__ == "__main__":
+  train()
+#  evaluate()
