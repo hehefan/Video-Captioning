@@ -16,7 +16,7 @@ import math
 tf.app.flags.DEFINE_float("learning_rate", 0.001, "Learning rate.")
 tf.app.flags.DEFINE_integer("batch_size", 64, "Batch size to use during training.")
 tf.app.flags.DEFINE_integer("size", 1024, "Size of RNN cell.")
-tf.app.flags.DEFINE_integer("num_layers", 3, "Number of RNN layers.")
+tf.app.flags.DEFINE_integer("num_layers", 1, "Number of RNN layers.")
 tf.app.flags.DEFINE_integer("feature_size", 2048, "Size of frame feature vector.")
 tf.app.flags.DEFINE_integer("max_sentence_length", 40, "Max length of sentence.")
 tf.app.flags.DEFINE_boolean("use_lstm", False, "LSTM or GRU for RNN cell.")
@@ -155,7 +155,7 @@ def evaluate():
 
   with tf.Session() as sess:
     model = MeanRNN(FLAG.feature_size, FLAG.vocab_size, FLAG.max_sentence_length, FLAG.size, FLAG.num_layers, FLAG.use_lstm, forward_only=True)
-    step = 0
+    step = 1000
     while True:
       step += FLAG.steps_per_checkpoint
       ckpt_path = os.path.join(FLAG.checkpoint_dir,'ckpt-%d'%step)
@@ -168,7 +168,7 @@ def evaluate():
           if data_utils.EOS_ID in outputs:
             outputs = outputs[:outputs.index(data_utils.EOS_ID)]
           sentence = " ".join([tf.compat.as_str(re_vocab[output]) for output in outputs])
-#          print ("%s: %s"%(sentence, caption[9]))
+          print ("%s: %s"%(sentence, caption[9]))
           GTS[idx] = caption
           RES[idx] = [sentence]
         print('STEP: %d'%step)
@@ -182,7 +182,8 @@ def evaluate():
         sys.stdout.flush()
       else:
         break
+      break
 
 if __name__ == "__main__":
   train()
-#  evaluate()
+# evaluate()
