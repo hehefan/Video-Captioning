@@ -1,3 +1,7 @@
 # Video-Captioning
 ## MSVD dataset
-### [Preprocessed data download](https://drive.google.com/drive/folders/0B7NctsDC2gmLbW90Wk5JRURXUVk?usp=sharing)
+| Directory        | Are           | Cool  |
+| ------------- |:-------------:| -----:|
+| col 3 is      | right-aligned | $1600 |
+| col 2 is      | centered      |   $12 |
+| zebra stripes | are neat      |    $1 |
