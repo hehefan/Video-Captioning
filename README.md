@@ -1,7 +1,6 @@
 # Video-Captioning
-## MSVD dataset
-| Directory        | Are           | Cool  |
-| ------------- |:-------------:| -----:|
-| col 3 is      | right-aligned | $1600 |
-| col 2 is      | centered      |   $12 |
-| zebra stripes | are neat      |    $1 |
+| Directory              | Encoder            | Attention | Decoder            | MSVD               |
+| ---------------------- |:------------------:|:---------:|:------------------:|:------------------:| 
+| 1024_gru_1024_gru      | GRU, 1024, 1 layer | No        | GRU, 1024, 1 layer |0.299071, 0.312598  |
+| 1024_gru_attn_1024_gru | GRU, 1024  1 layer | Yes       | GRU, 1024  1 layer |                    |
+
