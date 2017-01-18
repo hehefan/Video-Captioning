@@ -41,7 +41,7 @@ def evaluate():
       ckpt_path = os.path.join(FLAGS.checkpoint_dir,'ckpt-%d'%step)
       if os.path.isfile(ckpt_path+'.meta'):
         model.saver.restore(sess, ckpt_path)
-        cg = CaptionGenerator(model=model,start_id=data_utils.GO_ID,end_id=data_utils.EOS_ID, beam_size=1, max_caption_length=FLAGS.decoder_max_sentence_length, length_normalization_factor=0.0)
+        cg = CaptionGenerator(model=model,start_id=data_utils.GO_ID,end_id=data_utils.EOS_ID, beam_size=3, max_caption_length=FLAGS.decoder_max_sentence_length, length_normalization_factor=0.0)
         for vid, _ in feature.iteritems():
           feature_inputs, batch_decoder_inputs, batch_weights = model.get_batch(feature, [(vid, [0])])
           outputs = cg.beam_search(sess, feature_inputs)
