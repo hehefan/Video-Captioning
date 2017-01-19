@@ -12,7 +12,7 @@ from config import *
 from model import Seq2Seq
 
 def create_model(session, forward_only, step=None):
-  model = Seq2Seq(FLAGS.num_units, FLAGS.use_lstm, FLAGS.keep_prob, FLAGS.encoder_max_sequence_length, FLAGS.decoder_max_sentence_length, FLAGS.feature_size, FLAGS.vocab_size, FLAGS.learning_rate, FLAGS.learning_rate_decay_factor, FLAGS.max_gradient_norm, forward_only)
+  model = Seq2Seq(FLAGS.num_units, FLAGS.use_lstm, FLAGS.keep_prob, FLAGS.num_layers, FLAGS.encoder_max_sequence_length, FLAGS.decoder_max_sentence_length, FLAGS.feature_size, FLAGS.vocab_size, FLAGS.learning_rate, FLAGS.learning_rate_decay_factor, FLAGS.max_gradient_norm, forward_only)
   ckpt = tf.train.get_checkpoint_state(FLAGS.checkpoint_dir)
   if ckpt and tf.train.checkpoint_exists(ckpt.model_checkpoint_path):
     if step == None:
