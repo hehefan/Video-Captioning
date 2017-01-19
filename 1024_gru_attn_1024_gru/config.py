@@ -5,6 +5,7 @@ tf.app.flags.DEFINE_float("max_gradient_norm", 5.0, "Clip gradients to this norm
 tf.app.flags.DEFINE_integer("batch_size", 64, "Batch size to use during training.")
 tf.app.flags.DEFINE_integer("num_units", 1024, "Size of RNN cell.")
 tf.app.flags.DEFINE_boolean("use_lstm", False, "LSTM or GRU for RNN cell.")
+tf.app.flags.DEFINE_integer("num_layers", 3, "Number of layers in the model.") 
 tf.app.flags.DEFINE_float("keep_prob", 1.0, "Dropout.")
 tf.app.flags.DEFINE_integer("feature_size", 2048, "Size of frame feature vector.")
 tf.app.flags.DEFINE_integer("encoder_max_sequence_length", 30, "Max length of encoder sequence.")
