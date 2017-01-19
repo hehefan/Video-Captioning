@@ -1,4 +1,12 @@
 # Video-Captioning
+## Preprocessed Dataset
+### MSVD
+1. [feature.train](https://drive.google.com/uc?export=download&id=0B7NctsDC2gmLOF8xYTZPcFoySHc)
+2. [feature.test](https://drive.google.com/uc?export=download&id=0B7NctsDC2gmLMWxBYWhXVUNZSFE)
+3. [caption.train](https://drive.google.com/uc?export=download&id=0B7NctsDC2gmLWjVwMG51UElKQWs)
+4. [caption.test](https://drive.google.com/uc?export=download&id=0B7NctsDC2gmLTU9WaTNwM2VvRVk)
+5. [vocab.txt](https://drive.google.com/uc?export=download&id=0B7NctsDC2gmLWE1MVmpKTm5yVEk)
+
 ## Sequence to sequence
 | Directory              | Encoder                   | Attention | Decoder                   | MSVD(METEOR)  |
 | ---------------------- |:-------------------------:|:---------:|:-------------------------:|:-------------:| 
