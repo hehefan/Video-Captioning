@@ -34,7 +34,7 @@ def evaluate():
   max_meteor = 0
 
   with tf.Session() as sess:
-    model = Seq2Seq(FLAGS.num_units, FLAGS.use_lstm, 1.0, FLAGS.encoder_max_sequence_length, 1, FLAGS.feature_size, FLAGS.vocab_size, FLAGS.learning_rate, FLAGS.learning_rate_decay_factor, FLAGS.max_gradient_norm, forward_only=False)
+    model = Seq2Seq(FLAGS.num_units, FLAGS.use_lstm, 1.0, FLAGS.num_layers, FLAGS.encoder_max_sequence_length, 1, FLAGS.feature_size, FLAGS.vocab_size, FLAGS.learning_rate, FLAGS.learning_rate_decay_factor, FLAGS.max_gradient_norm, forward_only=False)
     step = 7000
     while True:
       step += FLAGS.steps_per_checkpoint
