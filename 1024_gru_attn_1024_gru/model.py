@@ -14,7 +14,7 @@ import data_utils
 linear = tf.nn.rnn_cell._linear
 
 class Seq2Seq(object):
-  def __init__(self, num_units, use_lstm, keep_prob, encoder_max_sequence_length, decoder_max_sentence_length, feature_size, vocab_size, learning_rate, learning_rate_decay_factor, max_gradient_norm, forward_only=False):
+  def __init__(self, num_units, use_lstm, keep_prob, num_layers, encoder_max_sequence_length, decoder_max_sentence_length, feature_size, vocab_size, learning_rate, learning_rate_decay_factor, max_gradient_norm, forward_only=False):
     self.feature_size = feature_size
     self.vocab_size = vocab_size
     self.encoder_max_sequence_length = encoder_max_sequence_length
@@ -32,6 +32,11 @@ class Seq2Seq(object):
     if use_lstm:
       decoder = tf.nn.rnn_cell.BasicLSTMCell(num_units=num_units, state_is_tuple=False)
     decoder = tf.nn.rnn_cell.DropoutWrapper(decoder, input_keep_prob=keep_prob, output_keep_prob=keep_prob)
+   
+    if num_layers > 1:
+      encoder = tf.nn.rnn_cell.MultiRNNCell([encoder] * num_layers)
+      decoder = tf.nn.rnn_cell.MultiRNNCell([decoder] * num_layers)
+
     decoder = tf.nn.rnn_cell.OutputProjectionWrapper(decoder, vocab_size)
 
     # Feeds for inputs.
@@ -128,8 +133,8 @@ class Seq2Seq(object):
   def one_step(self, session, attention_states, decoder_state, decoder_input):
     batch_size = decoder_input[0].shape[0]
     input_feed = {}
-    input_feed[self.attention_states.name] = attention_states
-    input_feed[self.encoder_state.name] = decoder_state
+    input_feed[self.attention_states] = attention_states
+    input_feed[self.encoder_state] = decoder_state
     
     for l in xrange(self.decoder_max_sentence_length): # decoder_max_sentence_length = 1
       input_feed[self.decoder_inputs[l].name] = decoder_input[l]
