@@ -60,7 +60,6 @@ def evaluate():
               print("%s:\t%f"%(k, v))
           else:
             print("%s:\t%f"%(method, score))
-        sys.stdout.flush()
       else:
         break
   print("Max METEOR:\t%f"%max_meteor)
