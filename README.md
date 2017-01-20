@@ -14,5 +14,5 @@
 | 1024_gru_attn_1024_gru | 1024 GRU, 1 layer, dp 0.0, 30 | Yes       | 1024 GRU, 1 layer, dp 0.0, 15 |31.4, b3s 32.2 |
 | 1024_gru_attn_1024_gru | 1024 GRU, 1 layer, dp 0.3, 30 | Yes       | 1024 GRU, 1 layer, dp 0.3, 15 |31.8, b3s 32.2 |
 | 1024_gru_attn_1024_gru | 1024 GRU, 3 layer, dp 0.0, 30 | Yes       | 1024 GRU, 3 layer, dp 0.0, 15 |30.7, b3s 31.4 |
-| 1024_gru_attn_1024_gru | 1024 GRU, 2 layer, dp 0.3, 15 | Yes       | 1024 GRU, 2 layer, dp 0.3, 15 |31.8, b3s 32.3 |
+| 1024_gru_attn_1024_gru | 1024 GRU, 2 layer, dp 0.3, 15 | Yes       | 1024 GRU, 2 layer, dp 0.3, 15 |31.8, b3s 32.7 |
 
