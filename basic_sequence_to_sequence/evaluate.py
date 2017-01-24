@@ -34,7 +34,7 @@ def evaluate():
 
   with tf.Session() as sess:
     model = Seq2Seq(FLAGS.num_units, FLAGS.use_lstm, FLAGS.encoder_max_sequence_length, FLAGS.decoder_max_sentence_length, FLAGS.feature_size, FLAGS.vocab_size, FLAGS.learning_rate, FLAGS.learning_rate_decay_factor, FLAGS.max_gradient_norm, forward_only=True)
-    step = 2900
+    step = 0
     while True:
       step += FLAGS.steps_per_checkpoint
       ckpt_path = os.path.join(FLAGS.checkpoint_dir,'ckpt-%d'%step)
