@@ -20,6 +20,6 @@
 
 ## 3. Adaptive Computation Time (encoder) sequence to sequence
 Encoder: 1024 GRU, 1 layer, dp 0.0, 30 
-Attention: No        
+Attention: No
 Decoder: 1024 GRU, 1 layer, dp 0.0, 15
-### (1) $$h^n_t$$
+### (1) <img src="http://chart.googleapis.com/chart?cht=tx&chl=\Large h^t_t" style="border:none;">
