@@ -22,4 +22,4 @@
 Encoder: 1024 GRU, 1 layer, dp 0.0, 30 
 Attention: No
 Decoder: 1024 GRU, 1 layer, dp 0.0, 15
-### (1) <img src="http://chart.googleapis.com/chart?cht=tx&chl=\Large h^t_t" style="border:none;">
+### (1) <img src="http://www.forkosh.com/mathtex.cgi? \Large h^n_t">
