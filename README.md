@@ -18,11 +18,11 @@
 | 5     | 1024 GRU, 2 layer, dp 0.3, 15 | Yes       | 1024 GRU, 2 layer, dp 0.3, 15 |31.8, b3s 32.7 |
 | 6     | 1024 GRU, 2 layer, dp 0.3, dy | No        | 1024 GRU, 2 layer, dp 0.3, 15 |29.9, b3s 30.9 |
 
-## 3. Adaptive Computation Time (encoder) sequence to sequence
+## 3. [Adaptive Computation Time](https://arxiv.org/pdf/1603.08983v4.pdf) (encoder) sequence to sequence
 Encoder: 1024 GRU, 1 layer, dp 0.0, 30; Attention: No; ecoder: 1024 GRU, 1 layer, dp 0.0, 15; Max computation step: 10
 ### (1) h = σ(WS + B)
 | Time Penalty | MSVD(METEOR) | Ponder Time Example
-|--------------|:------------:|:-------------------------------------------------------------------------------:|
+|--------------|:------------:|---------------------------------------------------------------------------------|
 | 0.0001       | 0.306957     | 10 9 5 4 4 4 4 5 6 7 9 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 |
 | 0.00001      | 0.304045     | 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 3 3 4 4 5 6 6 7 7 7 8 8 8 8 8 (video has 6 frame) |
 
