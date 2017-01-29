@@ -1,0 +1,17 @@
+import tensorflow as tf
+tf.app.flags.DEFINE_float("learning_rate", 0.001, "Learning rate.")
+tf.app.flags.DEFINE_float("learning_rate_decay_factor", 0.99, "Learning rate decays by this much.")
+tf.app.flags.DEFINE_float("max_gradient_norm", 5.0, "Clip gradients to this norm.")
+tf.app.flags.DEFINE_integer("batch_size", 64, "Batch size to use during training.")
+tf.app.flags.DEFINE_integer("num_units", 1024, "Size of RNN cell.")
+tf.app.flags.DEFINE_boolean("use_lstm", False, "LSTM or GRU for RNN cell.")
+tf.app.flags.DEFINE_integer("num_layers", 3, "Number of layers in the model.") 
+tf.app.flags.DEFINE_float("keep_prob", 1.0, "Dropout.")
+tf.app.flags.DEFINE_integer("feature_size", 2048, "Size of frame feature vector.")
+tf.app.flags.DEFINE_integer("encoder_max_sequence_length", 30, "Max length of encoder sequence.")
+tf.app.flags.DEFINE_integer("vocab_size", 7067, "Size of English vocabulary.")
+tf.app.flags.DEFINE_integer("decoder_max_sentence_length", 15, "Max length of decoder sentence.")
+tf.app.flags.DEFINE_string("checkpoint_dir", "CheckPoint", "Checkpoint directory.")
+tf.app.flags.DEFINE_integer("steps_per_checkpoint", 50, "How many training steps to do per checkpoint.")
+tf.app.flags.DEFINE_string("data_dir", "data/", "Data directory.")
+FLAGS = tf.app.flags.FLAGS
