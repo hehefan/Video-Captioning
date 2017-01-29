@@ -18,3 +18,8 @@
 | 5     | 1024 GRU, 2 layer, dp 0.3, 15 | Yes       | 1024 GRU, 2 layer, dp 0.3, 15 |31.8, b3s 32.7 |
 | 6     | 1024 GRU, 2 layer, dp 0.3, dy | No        | 1024 GRU, 2 layer, dp 0.3, 15 |29.9, b3s 30.9 |
 
+## 3. Adaptive Computation Time (encoder) sequence to sequence
+Encoder: 1024 GRU, 1 layer, dp 0.0, 30 
+Attention: No        
+Decoder: 1024 GRU, 1 layer, dp 0.0, 15
+### (1) $$h^n_t$$
